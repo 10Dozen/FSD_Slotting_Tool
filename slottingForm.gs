@@ -479,6 +479,8 @@ function dzn_slotForm_onSave() {
 		// Get ids of names which are not available for choosing at the slots item
 		var excludeId = headers;
 		var nickList = [];
+		var usedCounter = 0; // add-used-counted :: Added new variable
+		
 		// Fill section info with ALL original slots name
 		var sectionInfo = [];
 		
@@ -511,6 +513,7 @@ function dzn_slotForm_onSave() {
 					nickList.push(nicknameToShow);
 				}
 				var infoString = "✔ " + sectionInfo[slotIndex] + " -- " + nicknameToShow;
+				usedCounter++; // add-used-counted :: Increment variable when used slot passed
 				
 				if (data.slotForm_precense[dzn_getPrecense(usedNicks[i])][1] != "true") {
 					infoString = infoString + " ◑";
@@ -529,7 +532,9 @@ function dzn_slotForm_onSave() {
 		for (var i = 0; i < excludeId.length; i++) {
 			slots.splice(excludeId[i]-i, 1);
 		}
-		return [sectionInfoOutput, slots, nickList];
+		
+		// add-used-counted :: Return additional attribute - usedCounter to represent count of used slots (contain ✔)
+		return [sectionInfoOutput, slots, nickList, usedCounter];
 	}
 	
 	// ****************
@@ -589,6 +594,9 @@ function dzn_slotForm_onSave() {
 		form.getItemById(data.slotForm_idSections).setHelpText(updatedSideInfo[0]);
 		form.getItemById(data.slotForm_idChoices).asCheckboxItem().setChoiceValues(updatedSideInfo[1]);
 		roleItem.setHelpText(str.slots);
+		
+		// add-used-counted :: Add a number of used slots / total slots to "Slotting" item title
+		roleItem.setTitle(roleItem.getTitle() + "(" + updatedSideInfo[3] + "/" + (updatedSideInfo[1].length - 1) + ")");
 	} else {
 		var overallInfo = "";
 		for (var i = 0; i < data.slotForm_sides.length; i++) {
