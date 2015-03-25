@@ -591,12 +591,12 @@ function dzn_slotForm_onSave() {
 		);
 		// OUT: sectionInfoOutput, slots
 		updatedSideInfo[1].push("Без слота"); 
+		// add-used-counted :: Add a number of used slots / total slots to "Slotting" item title
+		form.getItemById(data.slotForm_idSections).setTitle(form.getItemById(data.slotForm_idSections).getTitle() + " (" + updatedSideInfo[3] + "/" + (updatedSideInfo[1].length - 1) + ")"););
+		
 		form.getItemById(data.slotForm_idSections).setHelpText(updatedSideInfo[0]);
 		form.getItemById(data.slotForm_idChoices).asCheckboxItem().setChoiceValues(updatedSideInfo[1]);
 		roleItem.setHelpText(str.slots);
-		
-		// add-used-counted :: Add a number of used slots / total slots to "Slotting" item title
-		roleItem.setTitle(roleItem.getTitle() + "(" + updatedSideInfo[3] + "/" + (updatedSideInfo[1].length - 1) + ")");
 	} else {
 		var overallInfo = "";
 		for (var i = 0; i < data.slotForm_sides.length; i++) {
