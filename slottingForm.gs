@@ -165,6 +165,7 @@ function dzn_slotForm_initializeFromMenu() {
 	var idName, idPrecense, idPasscode;
 	var idSidechoice = "0";
 	var idOverall = "0";
+	var sideTitlesNames = [];
 	
 	// Creating form items according to chosen form mode
 	for (var i = 0; i < sectionNamesMasks.length; i++) {
@@ -219,6 +220,7 @@ function dzn_slotForm_initializeFromMenu() {
 			case "s":
 				var item = form.addSectionHeaderItem().setTitle(itemName);
 				slottingSections.push(item.getId().toString());
+				sideTitlesNames.push(itemName);
 				break;
 		}
 	}
@@ -286,6 +288,7 @@ function dzn_slotForm_initializeFromMenu() {
 	ss.getRangeByName('slotForm_slotsHeadsNames').setValue(dzn_convert(slotsHeads, "toString")); // IDs of headers in slots names
 	ss.getRangeByName('slotForm_usedSlots').setValue("0 $ 0 $ 0 $ 0"); // Used slots for sides
 	ss.getRangeByName('slotForm_usedNicks').setValue("0 $ 0 $ 0 $ 0"); // Used nicknames for sides
+	ss.getRangeByName('slotForm_sideTitles').setValue(dzn_convert(sideTitlesNames, "toString")); // Side titles-  SIDE: Slotting
   
 	// Deleting blocks with SIDE and SLOTS settings
 	for (var i = 0; i < ids.length; i++) {
@@ -479,6 +482,8 @@ function dzn_slotForm_onSave() {
 		// Get ids of names which are not available for choosing at the slots item
 		var excludeId = headers;
 		var nickList = [];
+		var usedCounter = 0; // add-used-counted :: Added new variable
+		
 		// Fill section info with ALL original slots name
 		var sectionInfo = [];
 		
@@ -511,6 +516,7 @@ function dzn_slotForm_onSave() {
 					nickList.push(nicknameToShow);
 				}
 				var infoString = "✔ " + sectionInfo[slotIndex] + " -- " + nicknameToShow;
+				usedCounter++; // add-used-counted :: Increment variable when used slot passed
 				
 				if (data.slotForm_precense[dzn_getPrecense(usedNicks[i])][1] != "true") {
 					infoString = infoString + " ◑";
@@ -529,7 +535,9 @@ function dzn_slotForm_onSave() {
 		for (var i = 0; i < excludeId.length; i++) {
 			slots.splice(excludeId[i]-i, 1);
 		}
-		return [sectionInfoOutput, slots, nickList];
+		
+		// add-used-counted :: Return additional attribute - usedCounter to represent count of used slots (contain ✔)
+		return [sectionInfoOutput, slots, nickList, usedCounter];
 	}
 	
 	// ****************
@@ -543,7 +551,10 @@ function dzn_slotForm_onSave() {
 	
 	// Get DATA from Properties: ID values convert to single string, notIDs - into Arrays
 	var data = {};
-	var datalist = ["slotForm_idName","slotForm_idSections","slotForm_idChoices","slotForm_idPrecense","slotForm_idPasscode","slotForm_idSidechoice","slotForm_idOverall","slotForm_mode","slotForm_passcodes","slotForm_sides","slotForm_precense","slotForm_slotsNames","slotForm_slotsHeadsNames","slotForm_usedSlots","slotForm_usedNicks"];
+	var datalist = [
+		"slotForm_idName","slotForm_idSections","slotForm_idChoices","slotForm_idPrecense","slotForm_idPasscode","slotForm_idSidechoice","slotForm_idOverall",
+		"slotForm_mode","slotForm_passcodes","slotForm_sides","slotForm_precense","slotForm_slotsNames","slotForm_slotsHeadsNames","slotForm_usedSlots","slotForm_usedNicks","slotForm_sideTitles"
+	];
 	for (var i = 0; i < datalist.length; i++) {
 		var key = datalist[i].toString();
 		var value = dzn_convert(ss.getRangeByName(key).getValue().toString(), "toList");
@@ -558,7 +569,8 @@ function dzn_slotForm_onSave() {
 				}
 			}
 		}
-        	data[key] = value;  // A: Array [ 1, 2, 3]; B: Array []; C: Sting "1"
+        data[key] = value;  // A: Array [ 1, 2, 3]; B: Array []; C: Sting "1"
+      //Logger.log(data[key]);
 	}
   
 	//	Data values
@@ -581,11 +593,15 @@ function dzn_slotForm_onSave() {
 	// Get Updated Info and Update
 	var overallInfo = '';
 	if (data.slotForm_mode == "C") {
+		var slotsTotalCount = (data.slotForm_slotsNames[0].length - data.slotForm_slotsHeadsNames[0].length);
 		var updatedSideInfo = dzn_getUpdatedInfo(
 			data.slotForm_usedNicks[0], data.slotForm_usedSlots[0], data.slotForm_slotsNames[0], data.slotForm_slotsHeadsNames[0]
 		);
 		// OUT: sectionInfoOutput, slots
 		updatedSideInfo[1].push("Без слота"); 
+		// add-used-counted :: Add a number of used slots / total slots to "Slotting" item title
+		form.getItemById(data.slotForm_idSections).setTitle(data.slotForm_sideTitles[0] + " (" + updatedSideInfo[3] + "/" + slotsTotalCount + ")");
+		
 		form.getItemById(data.slotForm_idSections).setHelpText(updatedSideInfo[0]);
 		form.getItemById(data.slotForm_idChoices).asCheckboxItem().setChoiceValues(updatedSideInfo[1]);
 		roleItem.setHelpText(str.slots);

@@ -35,6 +35,7 @@ function dzn_mp_parseFromMenu() {
 				case "WEST":
 					westRoles.push(values[i])
 					break;
+				case "GUER":
 				case "INDEP":
 					indepRoles.push(values[i])
 					break;
