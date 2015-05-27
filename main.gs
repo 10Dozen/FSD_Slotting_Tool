@@ -18,7 +18,7 @@ function onOpen() {
 // *****************
 // Show sidebar
 function showSidebar(link1, link2) {
-	var htmlOut = "<style>p, li {font-size: 6;}div {background: #2E2E2E; width: 250px; border-radius: 12px; color: #FFCC00; font-family: 'Trebuchet MS', monospace; padding-left: 16px;}a {  padding-left: 30px; font-family: Consolas, monospace; border-radius: 52px; font-size: 14; text-decoration: none;}</style><p>FSD Slotting Tool - is a way to create slotting and feedback forms for your multiplayer online game.<p>";
+  var htmlOut = "<style>body {font-family: 'Trebuchet MS', monospace;} span {color: rgb(61, 151, 218); background-color: rgb(225, 233, 240); border-radius: 25%;} p, li {font-size: 6; } div {background: #2E2E2E; width: 250px; border-radius: 12px; color: #FFCC00; padding-left: 16px;}a {  padding-left: 30px; font-family: Consolas, monospace; border-radius: 52px; font-size: 14; text-decoration: none;}</style><p>FSD Slotting Tool - is a way to create slotting and feedback forms for your multiplayer online game.<p>";
   	var ss = SpreadsheetApp.getActive();
 	if (link1 != null) {
 		htmlOut = htmlOut + "<div>Newly Created Forms</div><a href='" 
